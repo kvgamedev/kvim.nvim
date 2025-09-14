@@ -67,14 +67,21 @@ H.check_multi_spec = function(opts)
 	H.install_spec(opts)
 end
 
+H.check_string_prefix = function(string)
+	if string:sub(1,5) == "https" then
+		return string
+	end
+	return "https://github.com/" .. string
+end
+
 H.install_spec = function(opts)
 	local src = ""
 	if opts.src then
-		src = "https://github.com/" .. opts.src
+		src = H.check_string_prefix(opts.src)
 	else
 		for _, i in ipairs(opts) do
 			if type(i) == "string" then
-				src = "https://github.com/" .. i
+				src = H.check_string_prefix(i)
 			end
 		end
 	end
