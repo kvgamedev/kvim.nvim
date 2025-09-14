@@ -26,9 +26,18 @@ end
 -- Helper Functionality ========================================================
 -- Add Plugin ------------------------------------------------------------------
 H.add_plugin = function(opts)
+	if opts.dependencies then
+		if type(opts.dependencies) == "table" then
+			for _, dependency in ipairs(opts.dependencies) do
+				H.add_plugin(dependency)
+			end
+		else
+			H.add_plugin(opts.dependencies)
+		end
+	end
 	local src = "https://github.com/" .. opts.src
 	if type(opts) == "string" then
-		vim.pack.add({ { src = src } }, { confirm = false })
+		vim.pack.add({ { src = "https://github.com/" .. opts } }, { confirm = false })
 		return
 	elseif type(opts) == "table" then
 		if opts.name and opts.version then
