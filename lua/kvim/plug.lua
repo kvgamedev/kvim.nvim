@@ -1,10 +1,12 @@
 local KPlug = {}
 local H = {}
 
+-- Setup ----------------------------------------------------------------------
 KPlug.setup = function()
 	_G.KPlug = KPlug
 end
 
+-- Manage Plugin --------------------------------------------------------------
 KPlug.add = function(opts)
 	if opts.lazy then
 		if opts.event then
@@ -21,6 +23,8 @@ KPlug.add = function(opts)
 	H.add_plugin(opts)
 end
 
+-- Helper Functionality ========================================================
+-- Add Plugin ------------------------------------------------------------------
 H.add_plugin = function(opts)
 	local src = "https://github.com/" .. opts.src
 	if type(opts) == "string" then
@@ -43,6 +47,7 @@ H.add_plugin = function(opts)
 	end
 end
 
+-- Lazy Load Plugin ------------------------------------------------------------
 local gr = vim.api.nvim_create_augroup("LazyLoad", { clear = true })
 H.lazy_load = function(callback, event)
 	if event then
