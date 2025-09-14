@@ -72,9 +72,6 @@ H.install_spec = function(opts)
 			end
 		end
 	end
-	if src == "" then
-		error("KPlug: No src provided!!!", 3)
-	end
 
 	if opts.name and opts.version then
 		vim.pack.add({ { src = src, name = opts.name, version = opts.version } }, { confirm = false })
