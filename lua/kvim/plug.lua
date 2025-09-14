@@ -7,13 +7,13 @@ KPlug.setup = function()
 end
 
 -- Manage Plugin --------------------------------------------------------------
----src: format: username/repo
----version: plugin version to use, can be a commit or vim.version.range
----name: name of the plugin
----config: function to execute after plugin installation
----lazy: lazy load the plugin? default false
----event: if lazy loading, additionally specify the vim event which triggers the installation, eg. "InsertEnter"
----@class opts: table
+-- src: format: username/repo
+-- version: plugin version to use, can be a commit or vim.version.range
+-- name: name of the plugin
+-- config: function to execute after plugin installation
+-- lazy: lazy load the plugin? default false
+-- event: if lazy loading, additionally specify the vim event which triggers the installation, eg. "InsertEnter"
+---@class KPlug.opts: table
 ---@field src? string
 ---@field name? string
 ---@field version? vim.VersionRange|string
