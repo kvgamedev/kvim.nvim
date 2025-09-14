@@ -72,6 +72,9 @@ H.install_spec = function(opts)
 			end
 		end
 	end
+	if opts.src == "" then
+		return
+	end
 
 	if opts.name and opts.version then
 		vim.pack.add({ { src = src, name = opts.name, version = opts.version } }, { confirm = false })
