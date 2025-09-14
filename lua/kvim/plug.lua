@@ -51,14 +51,15 @@ H.add_plugin = function(opts)
 end
 
 H.check_multi_spec = function(opts)
-		local multi_spec = false
-		for _, i in ipairs(opts) do
-			if type(i) == "table" then
-				multi_spec = true
-			end
+	local multi_spec = false
+	for _, i in ipairs(opts) do
+		if type(i) == "table" then
+			multi_spec = true
 		end
-		return multi_spec
+	end
+	return multi_spec
 end
+
 H.install_spec = function(opts)
 	local src = "https://github.com/" .. opts.src
 	if opts.name and opts.version then
@@ -75,6 +76,7 @@ H.install_spec = function(opts)
 		opts.config()
 	end
 end
+
 -- Lazy Load Plugin ------------------------------------------------------------
 local gr = vim.api.nvim_create_augroup("LazyLoad", { clear = true })
 H.lazy_load = function(callback, event)
