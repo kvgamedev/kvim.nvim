@@ -13,7 +13,7 @@ end
 -- config: function to execute after plugin installation
 -- lazy: lazy load the plugin? default false
 -- event: if lazy loading, additionally specify the vim event which triggers the installation, eg. "InsertEnter"
----@class KPlug.opts: table
+---@class opts: table
 ---@field src? string
 ---@field name? string
 ---@field version? vim.VersionRange|string
