@@ -49,10 +49,9 @@ H.check_multi_spec = function(opts)
 		if type(i) == "table" then
 			H.check_multi_spec(i)
 			H.install_spec(i)
-		else
-			H.install_spec(i)
 		end
 	end
+	H.install_spec(opts)
 end
 
 H.install_spec = function(opts)
