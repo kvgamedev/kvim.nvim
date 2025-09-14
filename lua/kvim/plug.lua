@@ -35,11 +35,11 @@ H.add_plugin = function(opts)
 			H.add_plugin(opts.dependencies)
 		end
 	end
-	local src = "https://github.com/" .. opts.src
 	if type(opts) == "string" then
 		vim.pack.add({ { src = "https://github.com/" .. opts } }, { confirm = false })
 		return
 	elseif type(opts) == "table" then
+		local src = "https://github.com/" .. opts.src
 		if opts.name and opts.version then
 			vim.pack.add({ { src = src, name = opts.name, version = opts.version } }, { confirm = false })
 		elseif opts.name then
