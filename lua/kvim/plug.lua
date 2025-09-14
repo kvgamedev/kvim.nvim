@@ -40,13 +40,7 @@ H.add_plugin = function(opts)
 		vim.pack.add({ { src = "https://github.com/" .. opts } }, { confirm = false })
 		return
 	elseif type(opts) == "table" then
-		if H.check_multi_spec(opts) == true then
-			for _, i in ipairs(opts) do
-				H.install_spec(i)
-			end
-		else
-			H.install_spec(opts)
-		end
+		H.check_multi_spec(opts)
 	end
 end
 
