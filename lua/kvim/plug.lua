@@ -35,27 +35,46 @@ H.add_plugin = function(opts)
 			H.add_plugin(opts.dependencies)
 		end
 	end
+
 	if type(opts) == "string" then
 		vim.pack.add({ { src = "https://github.com/" .. opts } }, { confirm = false })
 		return
 	elseif type(opts) == "table" then
-		local src = "https://github.com/" .. opts.src
-		if opts.name and opts.version then
-			vim.pack.add({ { src = src, name = opts.name, version = opts.version } }, { confirm = false })
-		elseif opts.name then
-			vim.pack.add({ { src = src, name = opts.name } }, { confirm = false })
-		elseif opts.version then
-			vim.pack.add({ { src = src, version = opts.version } }, { confirm = false })
+		if H.check_multi_spec(opts) == true then
+			for _, i in ipairs(opts) do
+				H.install_spec(i)
+			end
 		else
-			vim.pack.add({ { src = src } }, { confirm = false })
-		end
-
-		if opts.config then
-			opts.config()
+			H.install_spec(opts)
 		end
 	end
 end
 
+H.check_multi_spec = function(opts)
+		local multi_spec = false
+		for _, i in ipairs(opts) do
+			if type(i) == "table" then
+				multi_spec = true
+			end
+		end
+		return multi_spec
+end
+H.install_spec = function(opts)
+	local src = "https://github.com/" .. opts.src
+	if opts.name and opts.version then
+		vim.pack.add({ { src = src, name = opts.name, version = opts.version } }, { confirm = false })
+	elseif opts.name then
+		vim.pack.add({ { src = src, name = opts.name } }, { confirm = false })
+	elseif opts.version then
+		vim.pack.add({ { src = src, version = opts.version } }, { confirm = false })
+	else
+		vim.pack.add({ { src = src } }, { confirm = false })
+	end
+
+	if opts.config then
+		opts.config()
+	end
+end
 -- Lazy Load Plugin ------------------------------------------------------------
 local gr = vim.api.nvim_create_augroup("LazyLoad", { clear = true })
 H.lazy_load = function(callback, event)
