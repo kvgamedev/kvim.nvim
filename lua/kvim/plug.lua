@@ -65,7 +65,7 @@ H.install_spec = function(opts)
 			end
 		end
 	end
-	if opts.src == "" then
+	if src == "" then
 		return
 	end
 
