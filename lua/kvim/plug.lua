@@ -61,7 +61,20 @@ H.check_multi_spec = function(opts)
 end
 
 H.install_spec = function(opts)
-	local src = "https://github.com/" .. opts.src
+	local src = ""
+	if opts.src then
+		src = "https://github.com/" .. opts.src
+	else
+		for _, i in ipairs(opts) do
+			if type(i) == "string" then
+				src = "https://github.com/" .. i
+			end
+		end
+	end
+	if src == "" then
+		error("KPlug: No src provided!!!", 3)
+	end
+
 	if opts.name and opts.version then
 		vim.pack.add({ { src = src, name = opts.name, version = opts.version } }, { confirm = false })
 	elseif opts.name then
