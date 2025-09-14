@@ -51,13 +51,14 @@ H.add_plugin = function(opts)
 end
 
 H.check_multi_spec = function(opts)
-	local multi_spec = false
 	for _, i in ipairs(opts) do
 		if type(i) == "table" then
-			multi_spec = true
+			H.check_multi_spec(i)
+			H.install_spec(i)
+		else
+			H.install_spec(i)
 		end
 	end
-	return multi_spec
 end
 
 H.install_spec = function(opts)
