@@ -45,9 +45,9 @@ H.install_spec = function(opts)
 
 	if opts.lazy then
 		if opts.event then
-			H.lazy_load(H.exec_installation(opts), opts.event)
+			H.lazy_load(function() H.exec_installation(opts) end, opts.event)
 		else
-			H.lazy_load(H.exec_installation(opts))
+			H.lazy_load(function() H.exec_installation(opts) end)
 		end
 	else
 		H.exec_installation(opts)
