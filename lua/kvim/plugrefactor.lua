@@ -6,6 +6,7 @@ local M = {}
 local H = {}
 
 M.add = function(opts)
+	print("Hello World")
 	if type(opts) == "string" then
 		H.packadd(opts)
 	else
@@ -72,6 +73,7 @@ end
 H.exec_installation = function(opts)
 	H.packadd({ src = opts.src, name = opts.name, version = opts.version })
 	opts.config()
+	print("Hello World")
 end
 
 H.find_src = function(opts)
@@ -93,4 +95,5 @@ H.set_src = function(src)
 	end
 end
 
+_G.KPLUG = M
 return M
