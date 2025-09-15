@@ -1,8 +1,9 @@
+---@class KTerm
 local KTerm = {}
 local H = {}
 
 -- Setup ----------------------------------------------------------------------
-KTerm.setup = function()
+function KTerm.setup()
 	_G.KTerm = KTerm
 
 	H.create_keybinds()
@@ -10,7 +11,7 @@ KTerm.setup = function()
 end
 
 -- Run Command in Floating Window ---------------------------------------------
-KTerm.run_cmd = function(command)
+function KTerm.run_cmd(command)
 	if not vim.fn.executable(command) == 1 then
 		print("!!! Please Install " .. command .. " !!!")
 		return
@@ -27,7 +28,7 @@ KTerm.run_cmd = function(command)
 end
 
 -- Open Terminal in Floating Window -------------------------------------------
-KTerm.terminal = function()
+function KTerm.terminal()
 	KTerm.state.terminal = H.createFloatingWin({ buf = KTerm.state.terminal.buf })
 	if vim.bo[KTerm.state.terminal.buf].buftype ~= "terminal" then
 		vim.cmd.terminal()
@@ -39,6 +40,7 @@ KTerm.terminal = function()
 end
 
 -- Terminal & Job Data --------------------------------------------------------
+---@class KTerm.State
 KTerm.state = {
 	terminal = {
 		win = -1,
@@ -52,12 +54,12 @@ KTerm.state = {
 
 -- Helper functionality =======================================================
 -- Keybinds -------------------------------------------------------------------
-H.create_keybinds = function()
+function H.create_keybinds()
 	vim.keymap.set("t", "<c-q>", "<c-\\><c-n>", { desc = "Exit Terminal Mode" })
 end
 
 -- Window --------------------------------------------------------------------
-H.createFloatingWin = function(opts)
+function H.createFloatingWin(opts)
 	opts = opts or {}
 	local width = math.floor(vim.o.columns * (opts.width or 0.8))
 	local height = math.floor(vim.o.lines * (opts.height or 0.8))
@@ -85,7 +87,7 @@ H.createFloatingWin = function(opts)
 end
 
 -- Command --------------------------------------------------------------------
-H.create_user_commands = function()
+function H.create_user_commands()
 	vim.api.nvim_create_user_command("Term", function(opts)
 		if opts.args == "" then
 			KTerm.terminal()
