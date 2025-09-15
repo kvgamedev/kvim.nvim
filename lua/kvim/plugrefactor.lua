@@ -73,7 +73,7 @@ end
 H.exec_installation = function(opts)
 	H.packadd({ src = opts.src, name = opts.name, version = opts.version })
 	opts.config()
-	print("Hello World")
+	print("Installation complete for " .. opts.src )
 end
 
 H.find_src = function(opts)
