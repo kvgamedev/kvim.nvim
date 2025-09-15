@@ -19,7 +19,7 @@ H.check_table = function(opts)
 			H.check_table(i)
 			H.install_spec(i)
 		elseif type(i) == "string" then
-			H.packadd(i)
+			H.packadd(H.set_src(i))
 		end
 	end
 	H.install_spec(opts)
