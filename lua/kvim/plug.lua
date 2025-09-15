@@ -94,5 +94,5 @@ H.set_src = function(src)
 	end
 end
 
-_G.KPLUG = M
+_G.KPlug = M
 return M
