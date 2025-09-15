@@ -28,10 +28,6 @@ end
 H.install_spec = function(opts)
 	opts = opts or {}
 
-	if opts.dependencies then
-		M.add(opts.dependencies)
-	end
-
 	opts = H.find_src(opts)
 	if not opts.src then
 		return
@@ -71,6 +67,10 @@ H.lazy_load = function(callback, event)
 end
 
 H.exec_installation = function(opts)
+	if opts.dependencies then
+		M.add(opts.dependencies)
+	end
+
 	H.packadd({ src = opts.src, name = opts.name, version = opts.version })
 	if opts.config then opts.config() end
 end
