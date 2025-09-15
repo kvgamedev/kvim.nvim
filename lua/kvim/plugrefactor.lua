@@ -76,7 +76,7 @@ end
 
 H.exec_installation = function(opts)
 	H.packadd({ src = opts.src, name = opts.name, version = opts.version })
-	opts.config()
+	if opts.config then opts.config() end
 end
 
 H.find_src = function(opts)
