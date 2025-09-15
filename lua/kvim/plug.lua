@@ -1,7 +1,8 @@
+---@class KPlug
 local M = {}
 local H = {}
 
-M.add = function(opts)
+function M.add(opts)
 	if type(opts) == "string" then
 		H.packadd(H.set_src(opts))
 	else
@@ -9,7 +10,7 @@ M.add = function(opts)
 	end
 end
 
-H.check_table = function(opts)
+function H.check_table(opts)
 	for _, i in ipairs(opts) do
 		if type(i) == "table" then
 			H.check_table(i)
@@ -21,11 +22,11 @@ H.check_table = function(opts)
 	H.install_spec(opts)
 end
 
-H.packadd = function(spec)
+function H.packadd(spec)
 	vim.pack.add({ spec }, { confirm = false })
 end
 
-H.install_spec = function(opts)
+function H.install_spec(opts)
 	opts = opts or {}
 
 	opts = H.find_src(opts)
@@ -46,7 +47,7 @@ H.install_spec = function(opts)
 end
 
 local gr = vim.api.nvim_create_augroup("LazyLoad", { clear = true })
-H.lazy_load = function(callback, event)
+function H.lazy_load(callback, event)
 	if event then
 		vim.api.nvim_create_autocmd(event, {
 			pattern = "*",
@@ -66,7 +67,7 @@ H.lazy_load = function(callback, event)
 	})
 end
 
-H.exec_installation = function(opts)
+function H.exec_installation(opts)
 	if opts.dependencies then
 		M.add(opts.dependencies)
 	end
@@ -75,7 +76,7 @@ H.exec_installation = function(opts)
 	if opts.config then opts.config() end
 end
 
-H.find_src = function(opts)
+function H.find_src(opts)
 	if not opts.src then
 		for _, i in ipairs(opts) do
 			if type(i) == "string" then
@@ -86,7 +87,7 @@ H.find_src = function(opts)
 	return opts
 end
 
-H.set_src = function(src)
+function H.set_src(src)
 	if src:sub(1, 5) == "https" then
 		return src
 	else
