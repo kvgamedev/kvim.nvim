@@ -23,6 +23,7 @@ H.check_table = function(opts)
 			H.packadd(i)
 		end
 	end
+	H.install_spec(opts)
 end
 
 H.packadd = function(spec)
