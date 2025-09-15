@@ -44,7 +44,11 @@ H.install_spec = function(opts)
 	opts.src = H.set_src(opts.src)
 
 	if opts.lazy then
-		H.lazy_load(H.exec_installation(opts), opts.event)
+		if opts.event then
+			H.lazy_load(H.exec_installation(opts), opts.event)
+		else
+			H.lazy_load(H.exec_installation(opts))
+		end
 	else
 		H.exec_installation(opts)
 	end
