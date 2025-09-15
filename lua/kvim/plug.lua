@@ -22,7 +22,7 @@ H.check_table = function(opts)
 end
 
 H.packadd = function(spec)
-	vim.pack.add({ spec }, { confirm = false })
+	vim.pack.add({ spec }, { confirm = true })
 end
 
 H.install_spec = function(opts)
