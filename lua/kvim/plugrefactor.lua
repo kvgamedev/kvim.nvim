@@ -7,7 +7,7 @@ local H = {}
 
 M.add = function(opts)
 	if type(opts) == "string" then
-		H.packadd(opts)
+		H.packadd(H.set_src(opts))
 	else
 		H.check_table(opts)
 	end
