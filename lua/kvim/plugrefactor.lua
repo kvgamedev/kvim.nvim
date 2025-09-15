@@ -6,7 +6,6 @@ local M = {}
 local H = {}
 
 M.add = function(opts)
-	print("Hello World")
 	if type(opts) == "string" then
 		H.packadd(opts)
 	else
@@ -27,7 +26,7 @@ H.check_table = function(opts)
 end
 
 H.packadd = function(spec)
-	vim.pack.add({ spec }, { confirm = false })
+	vim.pack.add({ spec }, { confirm = true })
 end
 
 H.install_spec = function(opts)
@@ -78,7 +77,6 @@ end
 H.exec_installation = function(opts)
 	H.packadd({ src = opts.src, name = opts.name, version = opts.version })
 	opts.config()
-	print("Installation complete for " .. opts.src )
 end
 
 H.find_src = function(opts)
