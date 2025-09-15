@@ -1,110 +1,54 @@
-local KPlug = {}
+local M = {}
 local H = {}
 
--- Setup ----------------------------------------------------------------------
-KPlug.setup = function()
-	_G.KPlug = KPlug
-end
-
--- Manage Plugin --------------------------------------------------------------
--- src: format: username/repo
--- version: plugin version to use
--- name: name of the plugin
--- config: function to execute after plugin installation
--- lazy: lazy load the plugin? default false
--- event: if lazy loading, additionally specify the vim event which triggers the installation, eg. "InsertEnter"
----@class KPlug.opts: table
----@field src? string
----@field name? string
----@field version? vim.VersionRange|string
----@field config? function
----@field lazy? boolean
----@field event? string
-KPlug.add = function(opts)
-	if opts.lazy then
-		if opts.event then
-			H.lazy_load(function()
-				H.add_plugin(opts)
-			end, opts.event)
-		else
-			H.lazy_load(function()
-				H.add_plugin(opts)
-			end)
-		end
-		return
-	end
-	H.add_plugin(opts)
-end
-
--- Helper Functionality ========================================================
--- Add Plugin ------------------------------------------------------------------
-H.add_plugin = function(opts)
-	if opts.dependencies then
-		if type(opts.dependencies) == "table" then
-			for _, dependency in ipairs(opts.dependencies) do
-				H.add_plugin(dependency)
-			end
-		else
-			H.add_plugin(opts.dependencies)
-		end
-	end
-
+M.add = function(opts)
 	if type(opts) == "string" then
-		vim.pack.add({ { src = "https://github.com/" .. opts } }, { confirm = false })
-		return
-	elseif type(opts) == "table" then
-		H.check_multi_spec(opts)
+		H.packadd(H.set_src(opts))
+	else
+		H.check_table(opts)
 	end
 end
 
-H.check_multi_spec = function(opts)
+H.check_table = function(opts)
 	for _, i in ipairs(opts) do
 		if type(i) == "table" then
-			H.check_multi_spec(i)
+			H.check_table(i)
 			H.install_spec(i)
+		elseif type(i) == "string" then
+			H.packadd(H.set_src(i))
 		end
 	end
 	H.install_spec(opts)
 end
 
-H.check_string_prefix = function(string)
-	if string:sub(1,5) == "https" then
-		return string
-	end
-	return "https://github.com/" .. string
+H.packadd = function(spec)
+	vim.pack.add({ spec }, { confirm = false })
 end
 
 H.install_spec = function(opts)
-	local src = ""
-	if opts.src then
-		src = H.check_string_prefix(opts.src)
-	else
-		for _, i in ipairs(opts) do
-			if type(i) == "string" then
-				src = H.check_string_prefix(i)
-			end
-		end
+	opts = opts or {}
+
+	if opts.dependencies then
+		M.add(opts.dependencies)
 	end
-	if src == "" then
+
+	opts = H.find_src(opts)
+	if not opts.src then
 		return
 	end
+	opts.src = H.set_src(opts.src)
 
-	if opts.name and opts.version then
-		vim.pack.add({ { src = src, name = opts.name, version = opts.version } }, { confirm = false })
-	elseif opts.name then
-		vim.pack.add({ { src = src, name = opts.name } }, { confirm = false })
-	elseif opts.version then
-		vim.pack.add({ { src = src, version = opts.version } }, { confirm = false })
+	if opts.lazy then
+		if opts.event then
+			H.lazy_load(function() H.exec_installation(opts) end, opts.event)
+		else
+			H.lazy_load(function() H.exec_installation(opts) end)
+		end
 	else
-		vim.pack.add({ { src = src } }, { confirm = false })
-	end
-
-	if opts.config then
-		opts.config()
+		H.exec_installation(opts)
 	end
 end
 
--- Lazy Load Plugin ------------------------------------------------------------
 local gr = vim.api.nvim_create_augroup("LazyLoad", { clear = true })
 H.lazy_load = function(callback, event)
 	if event then
@@ -126,4 +70,29 @@ H.lazy_load = function(callback, event)
 	})
 end
 
-return KPlug
+H.exec_installation = function(opts)
+	H.packadd({ src = opts.src, name = opts.name, version = opts.version })
+	if opts.config then opts.config() end
+end
+
+H.find_src = function(opts)
+	if not opts.src then
+		for _, i in ipairs(opts) do
+			if type(i) == "string" then
+				opts.src = i
+			end
+		end
+	end
+	return opts
+end
+
+H.set_src = function(src)
+	if src:sub(1, 5) == "https" then
+		return src
+	else
+		return "https://github.com/" .. src
+	end
+end
+
+_G.KPLUG = M
+return M
