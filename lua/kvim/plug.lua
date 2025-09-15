@@ -1,44 +1,32 @@
+---@module "lazy"
+
+---@class KPlug
 local KPlug = {}
 local H = {}
 
--- Setup ----------------------------------------------------------------------
-KPlug.setup = function()
+-- Setup hook
+function KPlug.setup()
 	_G.KPlug = KPlug
 end
 
--- Manage Plugin --------------------------------------------------------------
--- src: format: username/repo
--- version: plugin version to use
--- name: name of the plugin
--- config: function to execute after plugin installation
--- lazy: lazy load the plugin? default false
--- event: if lazy loading, additionally specify the vim event which triggers the installation, eg. "InsertEnter"
----@class KPlug.opts: table
----@field src? string
----@field name? string
----@field version? vim.VersionRange|string
----@field config? function
----@field lazy? boolean
----@field event? string
-KPlug.add = function(opts)
-	if opts.lazy then
-		if opts.event then
-			H.lazy_load(function()
-				H.add_plugin(opts)
-			end, opts.event)
-		else
-			H.lazy_load(function()
-				H.add_plugin(opts)
-			end)
-		end
+---@param opts LazySpec
+function KPlug.add(opts)
+	if opts.lazy and type(opts.lazy) == "boolean" then
+		local event = opts.event or nil
+		H.lazy_load(function()
+			H.add_plugin(opts)
+		end, event)
+
 		return
 	end
 	H.add_plugin(opts)
 end
 
 -- Helper Functionality ========================================================
--- Add Plugin ------------------------------------------------------------------
-H.add_plugin = function(opts)
+
+-- Add Plugin
+---@param opts LazySpec
+function H.add_plugin(opts)
 	if opts.dependencies then
 		if type(opts.dependencies) == "table" then
 			for _, dependency in ipairs(opts.dependencies) do
@@ -50,31 +38,38 @@ H.add_plugin = function(opts)
 	end
 
 	if type(opts) == "string" then
-		vim.pack.add({ { src = "https://github.com/" .. opts } }, { confirm = false })
+		vim.pack.add({ { src = H.check_string_prefix(opts) } }, { confirm = false })
 		return
-	elseif type(opts) == "table" then
+	end
+
+	if type(opts) == "table" then
 		H.check_multi_spec(opts)
 	end
 end
 
-H.check_multi_spec = function(opts)
-	for _, i in ipairs(opts) do
-		if type(i) == "table" then
-			H.check_multi_spec(i)
-			H.install_spec(i)
+---@param opts LazySpec[]|LazySpec
+function H.check_multi_spec(opts)
+	for _, spec in ipairs(opts) do
+		if type(spec) == "table" then
+			H.check_multi_spec(spec)
+			H.install_spec(spec)
 		end
 	end
 	H.install_spec(opts)
 end
 
-H.check_string_prefix = function(string)
-	if string:sub(1,5) == "https" then
-		return string
+---@param str string
+---@return string
+function H.check_string_prefix(str)
+	if str:sub(1,5) == "https" then
+		return str
 	end
-	return "https://github.com/" .. string
+
+	return "https://github.com" .. (str:sub(1, 1) ~= "/" and "/" or "") .. str
 end
 
-H.install_spec = function(opts)
+---@param opts vim.pack.Spec|{ config?: fun() }|{ src?: string }
+function H.install_spec(opts)
 	local src = ""
 	if opts.src then
 		src = H.check_string_prefix(opts.src)
@@ -89,38 +84,37 @@ H.install_spec = function(opts)
 		return
 	end
 
-	if opts.name and opts.version then
-		vim.pack.add({ { src = src, name = opts.name, version = opts.version } }, { confirm = false })
-	elseif opts.name then
-		vim.pack.add({ { src = src, name = opts.name } }, { confirm = false })
-	elseif opts.version then
-		vim.pack.add({ { src = src, version = opts.version } }, { confirm = false })
-	else
-		vim.pack.add({ { src = src } }, { confirm = false })
+	---@type vim.pack.keyset.add
+	local add_opts = { confirm = false }
+
+	---@type vim.pack.Spec
+	local spec = { src = src }
+
+	if opts.name then
+		spec.name = opts.name
+	end
+	if opts.version then
+		spec.version = opts.version
 	end
 
-	if opts.config then
+	vim.pack.add({ spec }, add_opts)
+
+	if opts.config and vim.is_callable(opts.config) then
 		opts.config()
 	end
 end
 
--- Lazy Load Plugin ------------------------------------------------------------
-local gr = vim.api.nvim_create_augroup("LazyLoad", { clear = true })
-H.lazy_load = function(callback, event)
-	if event then
-		vim.api.nvim_create_autocmd(event, {
-			pattern = "*",
-			once = true,
-			group = gr,
-			callback = callback,
-		})
-		return
-	end
-	vim.api.nvim_create_autocmd("UIEnter", {
+-- Lazy Load Plugin
+---@param callback fun(args?: vim.api.keyset.create_autocmd.callback_args)
+---@param event? string
+function H.lazy_load(callback, event)
+	local gr = vim.api.nvim_create_augroup("LazyLoad", { clear = false })
+	local ev = event ~= nil and event or "UIEnter"
+	vim.api.nvim_create_autocmd(ev, {
 		pattern = "*",
 		once = true,
 		group = gr,
-		callback = function()
+		callback = ev ~= "UIEnter" and callback or function()
 			vim.defer_fn(callback, 0)
 		end,
 	})
