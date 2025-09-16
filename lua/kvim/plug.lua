@@ -1,3 +1,4 @@
+---@class KPlug
 local M = {}
 local H = {}
 

@@ -1,35 +1,36 @@
-local KTerm = {}
+---@class KTerm
+local M = {}
 local H = {}
 
 -- Setup ----------------------------------------------------------------------
-KTerm.setup = function()
-	_G.KTerm = KTerm
+M.setup = function()
+	_G.KTerm = M
 
 	H.create_keybinds()
 	H.create_user_commands()
 end
 
 -- Run Command in Floating Window ---------------------------------------------
-KTerm.run_cmd = function(command)
+M.run_cmd = function(command)
 	if not vim.fn.executable(command) == 1 then
 		print("!!! Please Install " .. command .. " !!!")
 		return
 	end
-	KTerm.state.job = H.createFloatingWin({ buf = KTerm.state.job.buf, title = command })
+	M.state.job = H.createFloatingWin({ buf = M.state.job.buf, title = command })
 	vim.fn.jobstart(command, {
 		term = true,
 		on_exit = function()
-			vim.api.nvim_win_close(KTerm.state.job.win, true)
-			vim.api.nvim_buf_delete(KTerm.state.job.buf, { force = true })
+			vim.api.nvim_win_close(M.state.job.win, true)
+			vim.api.nvim_buf_delete(M.state.job.buf, { force = true })
 		end,
 	})
 	vim.cmd.startinsert()
 end
 
 -- Open Terminal in Floating Window -------------------------------------------
-KTerm.terminal = function()
-	KTerm.state.terminal = H.createFloatingWin({ buf = KTerm.state.terminal.buf })
-	if vim.bo[KTerm.state.terminal.buf].buftype ~= "terminal" then
+M.terminal = function()
+	M.state.terminal = H.createFloatingWin({ buf = M.state.terminal.buf })
+	if vim.bo[M.state.terminal.buf].buftype ~= "terminal" then
 		vim.cmd.terminal()
 		vim.keymap.set("n", "<c-q>", function()
 			vim.api.nvim_win_hide(0)
@@ -39,7 +40,7 @@ KTerm.terminal = function()
 end
 
 -- Terminal & Job Data --------------------------------------------------------
-KTerm.state = {
+M.state = {
 	terminal = {
 		win = -1,
 		buf = -1,
@@ -88,11 +89,11 @@ end
 H.create_user_commands = function()
 	vim.api.nvim_create_user_command("Term", function(opts)
 		if opts.args == "" then
-			KTerm.terminal()
+			M.terminal()
 		else
-			KTerm.run_cmd(opts.args)
+			M.run_cmd(opts.args)
 		end
 	end, { nargs = "*" })
 end
 
-return KTerm
+return M
