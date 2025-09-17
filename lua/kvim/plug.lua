@@ -31,7 +31,7 @@ H.install_spec = function(opts)
 
 	opts = H.find_src(opts)
 	if not opts.src then
-		return
+		if opts.config then opts.config() end
 	end
 	opts.src = H.set_src(opts.src)
 
