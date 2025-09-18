@@ -2,15 +2,15 @@
 local M = {}
 local H = {}
 
--- Setup ----------------------------------------------------------------------
+-- Setup
 function M.setup()
 	_G.KTerm = M
 
-	H.create_keybinds()
 	H.create_user_commands()
+	H.create_autocommands()
 end
 
--- Run Command in Floating Window ---------------------------------------------
+-- Run Command in Floating Window
 function M.run_cmd(command)
 	if not vim.fn.executable(command) == 1 then
 		print("!!! Please Install " .. command .. " !!!")
@@ -27,7 +27,7 @@ function M.run_cmd(command)
 	vim.cmd.startinsert()
 end
 
--- Open Terminal in Floating Window -------------------------------------------
+-- Open Terminal in Floating Window
 function M.terminal()
 	M.state.terminal = H.createFloatingWin({ buf = M.state.terminal.buf })
 	if vim.bo[M.state.terminal.buf].buftype ~= "terminal" then
@@ -39,7 +39,7 @@ function M.terminal()
 	vim.cmd.startinsert()
 end
 
--- Terminal & Job Data --------------------------------------------------------
+-- Terminal & Job Data
 ---@class KTerm.State
 M.state = {
 	terminal = {
@@ -52,13 +52,8 @@ M.state = {
 	},
 }
 
--- Helper functionality =======================================================
--- Keybinds -------------------------------------------------------------------
-function H.create_keybinds()
-	vim.keymap.set("t", "<c-q>", "<c-\\><c-n>", { desc = "Exit Terminal Mode" })
-end
-
--- Window --------------------------------------------------------------------
+-- HELPER
+-- Window
 function H.createFloatingWin(opts)
 	opts = opts or {}
 	local width = math.floor(vim.o.columns * (opts.width or 0.8))
@@ -86,7 +81,7 @@ function H.createFloatingWin(opts)
 	return { buf = buf, win = win }
 end
 
--- Command --------------------------------------------------------------------
+-- Commands
 function H.create_user_commands()
 	vim.api.nvim_create_user_command("Term", function(opts)
 		if opts.args == "" then
@@ -95,6 +90,17 @@ function H.create_user_commands()
 			M.run_cmd(opts.args)
 		end
 	end, { nargs = "*" })
+end
+
+-- Autocommands
+function H.create_autocommands()
+	local gr = vim.api.nvim_create_augroup("KTerm", { clear = true })
+	vim.api.nvim_create_autocmd("VimResized", {
+		group = gr,
+		callback = function()
+			vim.cmd("windo wincmd =")
+		end
+	})
 end
 
 return M
