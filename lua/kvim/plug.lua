@@ -46,14 +46,14 @@ function H.install_spec(opts)
 			H.lazy_load(function()
 				H.exec_installation(opts)
 			end, opts.event)
-		else
-			H.lazy_load(function()
-				H.exec_installation(opts)
-			end)
+			return
 		end
-	else
-		H.exec_installation(opts)
+		H.lazy_load(function()
+			H.exec_installation(opts)
+		end)
+		return
 	end
+	H.exec_installation(opts)
 end
 
 -- Lazy Load spec
