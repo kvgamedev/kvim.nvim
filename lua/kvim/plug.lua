@@ -107,7 +107,7 @@ end
 -- prepend github url, so the user only needs to add user/repository as source
 -- if the src begins with https, then it will be used as is
 function H.set_src(src)
-	if src:sub(1, 5) == "https" then
+	if src:sub(1, 5) == "https" or src == nil then
 		return src
 	else
 		return "https://github.com/" .. src
