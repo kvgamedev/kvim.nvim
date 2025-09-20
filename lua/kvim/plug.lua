@@ -84,7 +84,9 @@ function H.exec_installation(opts)
 		M.add(opts.dependencies)
 	end
 
-	H.packadd({ src = opts.src, name = opts.name, version = opts.version })
+	if opts.src then
+		H.packadd({ src = opts.src, name = opts.name, version = opts.version })
+	end
 	if opts.config then
 		opts.config()
 	end
